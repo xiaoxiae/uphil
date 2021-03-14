@@ -1,0 +1,3 @@
+[submodule "pyls-uphil"]
+	path = pyls-uphil
+	url = git@github.com:xiaoxiae/pyls-uphil.git
