@@ -60,3 +60,14 @@ A collection of notes regarding the project(s), written in Czech.
 	- někdo měl stejný problém: https://github.com/python/mypy/blob/master/mypy/api.py
 	- dokumentace k `reveal_type`: https://mypy.readthedocs.io/en/latest/common_issues.html?highlight=reveal_type#reveal-type
 
+### 15. 3. 2021
+- nastavování `venv`u s `pyls` a mým pluginem
+- shánění LPS klienta, aby šel projekt rozumně testovat
+- vytvoření LSP playgroundu
+- `pyls` nepodporuje `DocumentSymbol[]`, ale MS implementace ano:
+	- Issue: https://github.com/palantir/python-language-server/issues/407
+	- PR:    https://github.com/palantir/python-language-server/pull/537
+	- řešení:
+		1. `pyls` to implementuje a já to normálně rozšířím
+		2. `pyls` to neimplementuje a já zneužiju něco jakjo 
+- Semantic Tokens je taky zajímavý, ale asi k ničemu: https://microsoft.github.io/language-server-protocol/specifications/specification-current/#textDocument_semanticTokens
