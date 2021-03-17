@@ -13,7 +13,7 @@ A collection of notes regarding the project(s), written in Czech.
 	- obarvit kolizi | barva proměnné, né builtinu
 - rozlišovat importy z jiných zdrojáků vs. z aktuálního modulu
 - barva podle stáří textu
-
+- používání stejného jména proměnné
 
 ## Odkazy
 - stránka LSP:     https://microsoft.github.io/language-server-protocol/
@@ -50,13 +50,12 @@ A collection of notes regarding the project(s), written in Czech.
 - pročítání protokolu
 	- `Document Symbols Request`: https://microsoft.github.io/language-server-protocol/specifications/specification-current/#textDocument_documentSymbol
 		- určitě zvládne přenášet data o typu proměnné
-		- `export const Variable = 13;`
 		- `DocumentSymbol[]` - hierarchie symbolů; preferované
 		- `SymbolInformation[]` - pouze list; nepreferované
 
 ### 14. 3. 2021
 - procházení implementací rozšíření `pyls`
-- hledání způsobu, jak zjišťovat data proměnných
+- hledání způsobu, jak zjišťovat data proměnných v `mypy`
 	- někdo měl stejný problém: https://github.com/python/mypy/blob/master/mypy/api.py
 	- dokumentace k `reveal_type`: https://mypy.readthedocs.io/en/latest/common_issues.html?highlight=reveal_type#reveal-type
 
@@ -64,10 +63,25 @@ A collection of notes regarding the project(s), written in Czech.
 - nastavování `venv`u s `pyls` a mým pluginem
 - shánění LPS klienta, aby šel projekt rozumně testovat
 - vytvoření LSP playgroundu
-- `pyls` nepodporuje `DocumentSymbol[]`, ale MS implementace ano:
+- `pyls` nepodporuje `DocumentSymbol[]`
 	- Issue: https://github.com/palantir/python-language-server/issues/407
 	- PR:    https://github.com/palantir/python-language-server/pull/537
-	- řešení:
-		1. `pyls` to implementuje a já to normálně rozšířím
-		2. `pyls` to neimplementuje a já zneužiju něco jakjo 
+	- MS implementace Pythoního ls ho podporuje
 - Semantic Tokens je taky zajímavý, ale asi k ničemu: https://microsoft.github.io/language-server-protocol/specifications/specification-current/#textDocument_semanticTokens
+
+### 16. 3. 2021
+- `Document Color Request` vypadá ~~skvěle~~ nepoužitelně (je jen na barvy): https://microsoft.github.io/language-server-protocol/specifications/specification-current/#textDocument_documentColor
+	- poslání stejného range ale v jiných barvách několikrát za sebou by mělo fungovat
+	- možná by mohlo jít nějak tweakovat specificky ten plugin, aby se posílaly dané barvy
+	- každopádně by bylo fajn mít config, který bude podporovat nějak rozumně zadávat custom theme
+- nemůžeme prostě (pro nějaký přenos informací) použít custom registraci a rozšíření language serveru:
+	- asi to bude nejlepší, protože nápad s `DocumentSymbols` ten protokol částečně zneužívá
+	- https://microsoft.github.io/language-server-protocol/specifications/specification-current/#client_registerCapability
+	- nezdá se, že by to `pyls` nějak rozumně podporoval, asi to bude potřeba nějak implementovat
+		- https://github.com/palantir/python-language-server/issues/921
+- `pyls-fork` se zdá, že bude lepší alternativa do budoucna: https://github.com/python-ls/python-ls
+	- zkusit nějaké lehčí věci (přepsat `README` do markdownu) fixnout: https://github.com/python-ls/python-ls/issues/4
+- `pytype` existuje: https://github.com/google/pytype
+	- funguje výrazně lépe!
+	- generuje `.pyi` soubory, které jsou vysloveně anotace proměnných a funkcí
+		- ne úplně detailní: https://github.com/google/pytype/issues/861
