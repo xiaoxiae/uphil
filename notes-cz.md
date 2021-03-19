@@ -85,3 +85,53 @@ A collection of notes regarding the project(s), written in Czech.
 	- funguje výrazně lépe!
 	- generuje `.pyi` soubory, které jsou vysloveně anotace proměnných a funkcí
 		- ne úplně detailní: https://github.com/google/pytype/issues/861
+
+### 17. 3. 2021
+- `pytype` umí `reveal_type(expr)`, což je identické s mypy a asi bude potřeba
+	- teoreticky půjde používat oboje? podle toho, která dependence tam je...
+
+### 19. 3. 2021
+- `pytype` má v `pytype/tools/traces` věc na řádek-po-řádku vypisování toho, co si o proměnných myslí:
+
+```
+1 x = 123
+  LOAD_CONST : 123 <- (ClassType(name='builtins.int'),)
+  STORE_NAME : x <- (ClassType(name='builtins.int'),)
+-------------------
+3 def funct() -> int:
+  LOAD_NAME : int <- (GenericType(base_type=ClassType(name='builtins.type'), parameters=(ClassType(name='builtins.int'),)),)
+  LOAD_CONST : ('return',) <- (TupleType(base_type=ClassType(name='builtins.tuple'), parameters=(ClassType(name='builtins.str'),)),)
+  BUILD_CONST_KEY_MAP : __setitem__ <- (ClassType(name='typing.Callable'), ClassType(name='builtins.NoneType'))
+  BUILD_CONST_KEY_MAP : __setitem__ <- (ClassType(name='typing.Callable'), ClassType(name='builtins.NoneType'))
+  LOAD_CONST : <pytype.blocks.OrderedCode object at 0x7f3c0bc7e4e0> <- (ClassType(name='builtins.code'),)
+  LOAD_CONST : funct <- (ClassType(name='builtins.str'),)
+  MAKE_FUNCTION : funct <- (CallableType(base_type=ClassType(name='typing.Callable'), parameters=(ClassType(name='builtins.int'),)),)
+  STORE_NAME : funct <- (CallableType(base_type=ClassType(name='typing.Callable'), parameters=(ClassType(name='builtins.int'),)),)
+-------------------
+4     y = 123
+  LOAD_CONST : 123 <- (ClassType(name='builtins.int'),)
+  STORE_FAST : y <- (ClassType(name='builtins.int'),)
+-------------------
+6     x = y
+  LOAD_FAST : y <- (ClassType(name='builtins.int'),)
+  STORE_FAST : x <- (ClassType(name='builtins.int'),)
+-------------------
+8     return "ahoj"
+  LOAD_CONST : ahoj <- (ClassType(name='builtins.str'),)
+-------------------
+10 for i in range(15):
+  LOAD_NAME : range <- (GenericType(base_type=ClassType(name='builtins.type'), parameters=(ClassType(name='builtins.range'),)),)
+  LOAD_CONST : 15 <- (ClassType(name='builtins.int'),)
+  CALL_FUNCTION : __init__ <- (GenericType(base_type=ClassType(name='typing.Callable'), parameters=(AnythingType(), ClassType(name='builtins.NoneType'))), ClassType(name='builtins.NoneType'))
+  CALL_FUNCTION : range <- (GenericType(base_type=ClassType(name='builtins.type'), parameters=(ClassType(name='builtins.range'),)), ClassType(name='builtins.range'))
+  GET_ITER : __iter__ <- (CallableType(base_type=ClassType(name='typing.Callable'), parameters=(GenericType(base_type=ClassType(name='typing.Iterator'), parameters=(ClassType(name='builtins.int'),)),)), GenericType(base_type=ClassType(name='typing.Iterator'), parameters=(ClassType(name='builtins.int'),)))
+  FOR_ITER : __next__ <- (ClassType(name='typing.Callable'), ClassType(name='builtins.int'))
+  STORE_NAME : i <- (ClassType(name='builtins.int'),)
+-------------------
+11     print(i)
+  LOAD_NAME : print <- (GenericType(base_type=ClassType(name='typing.Callable'), parameters=(AnythingType(), ClassType(name='builtins.NoneType'))),)
+  LOAD_NAME : i <- (ClassType(name='builtins.int'),)
+  CALL_FUNCTION : print <- (GenericType(base_type=ClassType(name='typing.Callable'), parameters=(AnythingType(), ClassType(name='builtins.NoneType'))), ClassType(name='builtins.NoneType'))
+  LOAD_CONST : None <- (ClassType(name='builtins.NoneType'),)
+-------------------
+```
